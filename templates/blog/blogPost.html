@@ -1,0 +1,99 @@
+{% extends 'base.html' %} {% block title %}Blog-Post{% endblock title %} 
+{% block body %} 
+{% load humanize %}
+{% load extras %}
+<div class="container blog-post-content my-3">
+  <h4 class="blog-post-title">{{post.postTitle}}</h4>
+  <h5>{{post.timeStamp}} by {{post.postAuthor}}</h5>
+  <p>{{post.postContent}}</p>
+  <a href="/blog" class="btn btn-outline-success">Go Back to Blog...</a>
+</div>
+<div class="container">
+  <h3>Comments ({{comments.count}})</h3>
+  <div class="my-2">
+    {% if user.is_authenticated %}
+    <form action="\blog\postComment" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="comment">Add Comment</label>
+        <input
+          type="text"
+          name="comment"
+          class="form-control"
+          placeholder="Enter Comment Here"
+        />
+      </div>
+      <input type="hidden" name="postSno" value="{{post.sNo}}" />
+      <input type="hidden" name="parentSno" value="" />
+      <button type="submit" class="btn btn-outline-success">Submit</button>
+    </form>
+    {% endif %}
+  </div>
+  {% for comment in comments %}
+  <div class="row my-2">
+    <div class="col-md-2">
+      <img
+        class="rounded-mx-auto-d-block w-75 p-3 border border-dark"
+        src="/static/img/user.ico"
+        alt="user"
+      />
+    </div>
+    <div class="col-md-10">
+      Posted by <b>{{comment.user.username}} </b>
+      <span class="badge badge-success">{{comment.timestamp|naturaltime}}</span>
+      <div>{{comment.comment}}</div>
+      <div class="reply mx-0">
+        <button
+          class="btn btn-sm btn-success"
+          type="button"
+          data-toggle="collapse"
+          data-target="#replyBox{{comment.sno}}"
+          aria-expanded="false"
+          aria-controls="replyBox{{comment.sno}}"
+        >
+          Reply
+        </button>
+        <div class="collapse" id="replyBox{{comment.sno}}">
+          <div class="card card-body">
+            <form action="\blog\postComment" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="comment">Post A Reply</label>
+                <input
+                  type="text"
+                  name="comment"
+                  class="form-control form-control-sm"
+                  placeholder="Enter Comment Here"
+                />
+                <input type="hidden" name="parentSno" value="{{comment.sno}}" />
+              </div>
+              <input type="hidden" name="postSno" value="{{post.sNo}}" />
+              <button type="submit" class="btn btn-outline-success">
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="replies my-2">
+          {% for reply in replyDict|get_val:comment.sno %}
+            <div class="row my-2">
+              <div class="col-md-2">
+                <img
+                  class="rounded-mx-auto-d-block w-75 p-3 border border-dark"
+                  src="/static/img/user.ico"
+                  alt="user"
+                />
+              </div>
+              <div class="col-md-10">
+                Posted by <b>{{reply.user.username}} </b>
+                <span class="badge badge-success">{{reply.timestamp|naturaltime}}</span>
+                <div>{{reply.comment}}</div>
+              </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock body %}

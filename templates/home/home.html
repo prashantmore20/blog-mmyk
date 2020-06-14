@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock title %} 
+{% block homeactive%}active{% endblock homeactive%}
+{% block body %}
+
+<div class="container">
+  <div class="jumbotron jumbotron-fluid">
+    <h1 class="display-4">मैफलीत माझ्या..</h1>
+    <p class="lead">
+      This is a modified jumbotron that occupies the entire horizontal space of
+      its parent.
+    </p>
+    {% for post in post %}
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card-body">
+          <h5 class="card-title">{{post.postTitle}}</h5>
+          <p class="card-text">{{post.postContent}}</p>
+          {% if user.is_authenticated %}
+          <a href="/blog/{{post.postSlug}}" class="btn btn-outline-success"
+            >Continue Reading</a
+          >
+          {% else %}
+          <button
+            type="button"
+            class="btn btn-outline-success mr-2"
+            data-toggle="modal"
+            data-target="#loginModal"
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-success"
+            data-toggle="modal"
+            data-target="#signupModal"
+          >
+            Signup
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<hr />
+{% endblock body %}
